@@ -1,0 +1,51 @@
+// Pin definitions
+const int moistureSensorPin = A0;   // Analog pin for soil moisture sensor
+const int pumpRelayPin = 7;         // Digital pin for controlling the relay (water pump)
+const int buzzerPin = 8;            // Digital pin for buzzer
+const int ledPin = 9;               // Digital pin for LED
+
+// Thresholds
+const int dryThreshold = 300;      // Moisture level below which watering is triggered
+const int wetThreshold = 700;      // Moisture level above which watering is stopped
+
+void setup() {
+  // Initialize serial communication for debugging
+  Serial.begin(9600);
+  
+  // Set pin modes
+  pinMode(pumpRelayPin, OUTPUT);
+  pinMode(buzzerPin, OUTPUT);
+  pinMode(ledPin, OUTPUT);
+  
+  // Ensure components are off at startup
+  digitalWrite(pumpRelayPin, LOW);
+  digitalWrite(buzzerPin, LOW);
+  digitalWrite(ledPin, LOW);
+}
+
+void loop() {
+  // Read the moisture sensor value
+  int moistureValue = analogRead(moistureSensorPin);
+  
+  // Print the moisture value to the Serial Monitor
+  Serial.print("Moisture Level: ");
+  Serial.println(moistureValue);
+  
+  // Check if the soil is dry
+  if (moistureValue < dryThreshold) {
+    Serial.println("Soil is dry. Turning on the pump...");
+    digitalWrite(pumpRelayPin, HIGH);  // Turn on the pump
+    digitalWrite(buzzerPin, HIGH);     // Turn on the buzzer
+    digitalWrite(ledPin, HIGH);        // Turn on the LED
+  }
+  // Check if the soil is wet enough
+  else if (moistureValue > wetThreshold) {
+    Serial.println("Soil is wet. Turning off the pump...");
+    digitalWrite(pumpRelayPin, LOW);   // Turn off the pump
+    digitalWrite(buzzerPin, LOW);      // Turn off the buzzer
+    digitalWrite(ledPin, LOW);         // Turn off the LED
+  }
+  
+  // Wait before the next reading
+  delay(5000);  // 5 seconds delay
+}
